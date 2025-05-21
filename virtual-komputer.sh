@@ -6,7 +6,7 @@ PROJECT_NAME="virtual-komputer"
 CONTAINER_NAME="virtual-komputer"
 PORT_WEB=3040
 NGROK_LOG="$HOME/${PROJECT_NAME}/ngrok.log"
-NGROK_TOKEN="ISI_TOKEN_NGROK_MU_DI_SINI"  # <-- GANTI dengan token ngrok kamu
+NGROK_TOKEN="2xHyGchaDBtxaLuVnAmhx3YPJOa_4mXvEM7TsVEEGW4bRnxYF"  # <-- GANTI dengan token ngrok kamu
 
 echo "?? Membuat direktori proyek..."
 mkdir -p ~/${PROJECT_NAME}/config/custom-cont-init.d
@@ -51,8 +51,8 @@ apt-get update
 apt-get install -y chromium
 
 # Install Discord via .deb
-DISCORD_DEB="/tmp/discord.deb"
-wget -O "$DISCORD_DEB" "https://discord.com/api/download?platform=linux&format=deb" && \
+DISCORD_DEB="/tmp/discord-0.0.95.deb"
+wget -O "$DISCORD_DEB" "https://discord.com/api/download?platform=linux" && \
     apt-get install -y "$DISCORD_DEB" && \
     rm -f "$DISCORD_DEB"
 
