@@ -3,8 +3,7 @@
 
 
 chmod +x virtual-komputer.sh
-./virtual-komputer
-
+./virtual-komputer.sh
 
 docker exec -it virtual-komputer bash
 
