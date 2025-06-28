@@ -6,22 +6,23 @@ PROJECT_NAME="virtual-komputer"
 CONTAINER_NAME="virtual-komputer"
 PORT_WEB=3040
 NGROK_LOG="$HOME/${PROJECT_NAME}/ngrok.log"
-NGROK_TOKEN="2xHyGchaDBtxaLuVnAmhx3YPJOa_4mXvEM7TsVEEGW4bRnxYF"  # <-- GANTI dengan token ngrok kamu
+NGROK_TOKEN="2xHyGchaDBtxaLuVnAmhx3YPJOa_4mXvEM7TsVEEGW4bRnxYF"  # GANTI jika perlu
 
-echo "?? Membuat direktori proyek..."
+echo "📁Kene malu, ngae  direktori Project..."
 mkdir -p ~/${PROJECT_NAME}/config/custom-cont-init.d
 
-echo "?? Menyiapkan Docker Compose v2.27.0..."
+echo "🐳Suud keto nyiapin  Docker Compose v2.27.0..."
 COMPOSE_VERSION="v2.27.0"
 mkdir -p ~/.docker/cli-plugins
 curl -SL https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64 \
   -o ~/.docker/cli-plugins/docker-compose
 chmod +x ~/.docker/cli-plugins/docker-compose
 export PATH="$HOME/.docker/cli-plugins:$PATH"
-echo "? Docker Compose terinstal: $(docker compose version)"
+echo "✅ Docker Composesuba mepasang: $(docker compose version)"
 
-echo "?? Membuat docker-compose.yml..."
+echo "🧾Jani Ngae docker-compose.yml..."
 cat > ~/${PROJECT_NAME}/docker-compose.yml <<EOF
+version: '3.9'
 services:
   webtop:
     container_name: ${CONTAINER_NAME}
@@ -29,45 +30,53 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Asia/Jakarta
+      - TZ=Asia/Makassar
       - WEBTOP_PASSWORD=admin123
     volumes:
       - $HOME/${PROJECT_NAME}/config:/config
     ports:
       - "${PORT_WEB}:3000"
     shm_size: "2gb"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - customnet
     restart: unless-stopped
+
+networks:
+  customnet:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1400
 EOF
 
-echo "?? Menambahkan auto-installer Chromium & Discord..."
-cat > ~/${PROJECT_NAME}/config/custom-cont-init.d/01-install-apps.sh <<'EOF'
+echo "⚙️ Isinin script optimasi jaringan..."
+cat > ~/${PROJECT_NAME}/config/custom-cont-init.d/01-boost-network.sh <<'EOF'
 #!/bin/bash
 
-echo "?? Menginstal Chromium & Discord..."
+echo "⚙️ Optimasi jaringan apang ngebut internetne..."
 
-apt-get update
+echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+sysctl -p || true
 
-# Install Chromium
-apt-get install -y chromium
+ulimit -n 65535
+echo "fs.file-max = 100000" >> /etc/sysctl.conf
+sysctl -p || true
 
-# Install Discord via .deb
-DISCORD_DEB="/tmp/discord-0.0.95.deb"
-wget -O "$DISCORD_DEB" "https://discord.com/api/download?platform=linux" && \
-    apt-get install -y "$DISCORD_DEB" && \
-    rm -f "$DISCORD_DEB"
-
-echo "? Chromium & Discord terinstal."
+echo " Internet sube ngebut."
 EOF
 
-chmod +x ~/${PROJECT_NAME}/config/custom-cont-init.d/01-install-apps.sh
+chmod +x ~/${PROJECT_NAME}/config/custom-cont-init.d/01-boost-network.sh
 
-echo "?? Menjalankan container..."
+echo "🚀Jalanang containerne..."
 cd ~/${PROJECT_NAME}
 docker compose up -d
 
-echo "?? Menyiapkan ngrok..."
+echo "🌐Jani nyiapang ngrok..."
 if ! command -v ngrok >/dev/null; then
-  echo "?? Menginstal ngrok..."
+  echo "📦Nginstal ngrok..."
   curl -s https://ngrok-agent.s3.amazonaws.com/ngrok.asc | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
   echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | sudo tee /etc/apt/sources.list.d/ngrok.list
   sudo apt update && sudo apt install -y ngrok
@@ -75,15 +84,15 @@ fi
 
 ngrok config add-authtoken "${NGROK_TOKEN}"
 
-echo "?? Menjalankan ngrok tunnel di port ${PORT_WEB}..."
+echo "📡Ngaenang  ngrok terowongan di port ${PORT_WEB}..."
 nohup ngrok http ${PORT_WEB} --log=stdout > "${NGROK_LOG}" 2>&1 &
 sleep 8
 
 NGROK_URL=$(curl -s http://127.0.0.1:4040/api/tunnels | grep -oE 'https://[a-z0-9\-]+\.ngrok-free\.app' | head -n1)
 
-echo "? Virtual Komputer aktif!"
+echo "✅Virtual Komputersube dadi anggon!"
 if [[ -n "$NGROK_URL" ]]; then
-  echo "?? Akses Webtop di: ${NGROK_URL}"
+  echo "🌍Copy link ne, trus buka di komputer atau hp, ingetang to: ${NGROK_URL}"
 else
-  echo "?? Gagal mengambil URL ngrok. Cek log di: ${NGROK_LOG}"
+  echo "⚠️ Sing ngidayang nyemak linkne. Cek log nah, ane dini: ${NGROK_LOG}"
 fi
