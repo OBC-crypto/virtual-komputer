@@ -6,7 +6,7 @@ PROJECT_NAME="virtual-komputer"
 CONTAINER_NAME="virtual-komputer"
 PORT_WEB=3040
 NGROK_LOG="$HOME/${PROJECT_NAME}/ngrok.log"
-NGROK_TOKEN="2xHyGchaDBtxaLuVnAmhx3YPJOa_4mXvEM7TsVEEGW4bRnxYF"  # GANTI jika perlu
+NGROK_TOKEN=""  # GANTI jika perlu
 
 echo "📁Kene malu, ngae  direktori Project..."
 mkdir -p ~/${PROJECT_NAME}/config/custom-cont-init.d
